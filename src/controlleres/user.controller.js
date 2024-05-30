@@ -9,6 +9,7 @@ import uploadOnCloudinary from "../utils/cloudinary.js";
 //@route :http://localhost:7070/api/v1/users/register
 // ________________________________________________________
 const registerUser = AsyncHandler(async(req,res,next)=>{
+
     const {username , email ,  password ,  contactNo , address}= req.body;
  
     //check fileds are filled or not 
