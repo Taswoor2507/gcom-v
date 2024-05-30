@@ -1,5 +1,4 @@
 import mongoose , {Schema} from "mongoose";
-import { type } from "os";
 
 const userSchema = new Schema ({
   username:{
@@ -23,8 +22,7 @@ const userSchema = new Schema ({
     default:"user" , 
     required:true
   } , 
-  address:[
-   {
+  address:{
     Country:{
         type:String ,    
     } , 
@@ -32,7 +30,7 @@ const userSchema = new Schema ({
      type:String ,
     }
    }
-  ] , 
+ , 
   profileImage:{
     type:String //url link from cloudinary
   } , 
