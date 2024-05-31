@@ -61,11 +61,15 @@ const registerUser = AsyncHandler(async(req,res,next)=>{
        }
      await sendEmail(options)
 
+     //generate access token
+     const token = user.generateAccessToken()
+  // console.log(token);
   //send respose to server
     res.status(201).json({
       success:true,
       message:"User created successfully",
-      data:user
+      data:user, 
+      token 
     })
 })
 // ___________________________________END REGISTER CONTROLLER______________________________

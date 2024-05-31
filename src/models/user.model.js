@@ -1,5 +1,8 @@
 import mongoose , {Schema} from "mongoose";
 import bcrypt from "bcryptjs";
+import jwt from 'jsonwebtoken'
+import EnvVariables from "../constants.js";
+const  {JWT_SECRET_KEY , JWT_EXPIRE_TIME} =EnvVariables;
 const userSchema = new Schema ({
   username:{
     type:String,
@@ -47,10 +50,21 @@ userSchema.pre("save" , async function(next){
    if(!this.isModified("password")) return next();
    this.password = await bcrypt.hash(this.password , 10)
     return next()
-    
     })
   
-
+// generate jsonwebtoken method
+userSchema.methods.generateAccessToken = function(){
+     return  jwt.sign({
+        id:this._id,
+        email:this.email ,
+      } , 
+      JWT_SECRET_KEY
+      ,
+      {
+        expiresIn:JWT_EXPIRE_TIME
+      }
+     )
+}
 
 
 
