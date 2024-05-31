@@ -6,6 +6,7 @@ const ErrorMiddleware = (err , req, res, next)=>{
 if(err.name === "CastError"){
     err.message = `Invalid user ${err.path}`
     err.statusCode = 404
+
     
 }
 
@@ -14,11 +15,11 @@ if(err.name === "CastError"){
 
 return res.status(err.statusCode).json({
     message:err.message,
-    // stack:err.stack, 
-    // errors :err.errors ,
-    // name:err.name,
-    // code :err.code,
-    // path:err.path
+    stack:err.stack, 
+    errors :err.errors ,
+    name:err.name,
+    code :err.code,
+    path:err.path
 })
 
 }

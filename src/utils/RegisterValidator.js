@@ -24,9 +24,8 @@ const registerValidator =
     .optional({ checkFalsy: true })
     .isString().withMessage('City must be a string'),
 
-  body('profileImage')
-    .optional()
-    .isURL().withMessage('Profile Image must be a valid URL'),
+//   body('profileImage')
+//     .isURL().withMessage('Profile Image must be a valid URL'),
 
   body('contactNo')
     .notEmpty().withMessage('Contact Number field is required')

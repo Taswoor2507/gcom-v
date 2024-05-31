@@ -2,6 +2,7 @@ import User from "../models/user.model.js";
 import ApiError from "../utils/ApiError.js";
 import AsyncHandler from "../utils/AsyncHandler.js";
 import uploadOnCloudinary from "../utils/cloudinary.js";
+import sendEmail from "../utils/sendMail.js";
 
 // ________________________________________________________
 //@Controller register user 
@@ -24,6 +25,7 @@ const registerUser = AsyncHandler(async(req,res,next)=>{
    }
 
 // check profile image is available
+  // console.log(req.file);
    const profileImageLocalPath = req.file?.path
    if(!profileImageLocalPath){
      console.log("Profile image path is not available");
@@ -50,6 +52,14 @@ const registerUser = AsyncHandler(async(req,res,next)=>{
    if(!user){
      return next(new ApiError("User Register failed !!" , 400))
    }
+       //send congrats email to registered user
+       const options = {
+        sendTo : user.email, 
+        subject : "Gcom Registration" , 
+        text : `Congratulations ${user.username} you have successfully registered on our website ---->  gcom` , 
+        // html : `Congratulations ${user.username} you have successfully registered on our website` ,
+       }
+     await sendEmail(options)
 
   //send respose to server
     res.status(201).json({
@@ -58,9 +68,9 @@ const registerUser = AsyncHandler(async(req,res,next)=>{
       data:user
     })
 })
-// ___________________________________END REGISTER CONTROLLER_________________________________________________________
+// ___________________________________END REGISTER CONTROLLER______________________________
 
 
 
-//____________________________________ export all controllers______________________________________________________
+//____________________________________ export all controllers_______________________________
 export {registerUser}
