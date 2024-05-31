@@ -9,9 +9,9 @@ const registerValidator =
 
   body('email')
     .trim()
-    .notEmpty().withMessage('Email field is required') ,
-    // .isEmail().withMessage('Email is not valid')
-    // .normalizeEmail(),
+    .notEmpty().withMessage('Email field is required') 
+    .isEmail().withMessage('Email is not valid')
+    .normalizeEmail(),
 
   body('password')
     .notEmpty().withMessage('Password field is required'),
@@ -24,8 +24,9 @@ const registerValidator =
     .optional({ checkFalsy: true })
     .isString().withMessage('City must be a string'),
 
-//   body('profileImage')
-//     .isURL().withMessage('Profile Image must be a valid URL'),
+  // body('profileImage')
+  //   .optional({ checkFalsy: true })
+  //   .isURL().withMessage('Profile Image must be a valid URL'),
 
   body('contactNo')
     .notEmpty().withMessage('Contact Number field is required')
