@@ -74,7 +74,46 @@ const registerUser = AsyncHandler(async(req,res,next)=>{
 })
 // ___________________________________END REGISTER CONTROLLER______________________________
 
+//________________________________USER LOGIN CONTROLLER___________________________
+const userLogin = AsyncHandler(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  // Check if email is empty
+  if (!email) {
+      return next(new ApiError("Email field is required", 400));
+  }
+  // Check if password is empty
+  if (!password) {
+      return next(new ApiError("Password field is required", 400));
+  }
+
+  // Find user by email
+  const user = await User.findOne({ email:email });
+  if (!user) {
+      return next(new ApiError("User not found", 404));
+  }
+
+  // Compare password
+  const isMatch = await user.comparePassword(password);
+  if (!isMatch) {
+      return next(new ApiError("Invalid email or password", 400));
+  }
+
+  // Generate access token
+  const token = user.generateAccessToken();
+
+  // Send response to client
+  res.status(200).json({
+      success: true,
+      message: "User logged in successfully",
+      data: user,
+      token
+  });
+});
+
+// _______________login controller ends____________________________________________
+
 
 
 //____________________________________ export all controllers_______________________________
-export {registerUser}
+export {registerUser , userLogin}
