@@ -148,6 +148,7 @@ if(!user) return next(ApiError("User not found" , 404))
 })
 
 //update user role 
+// admin only 
 const updateUserRole = AsyncHandler(async(req,res,next)=>{
   const id = req.params.id;
   const user = await User.findById(id)
@@ -167,5 +168,30 @@ if(role !== "admin" || role !==  "admin") return next(new ApiError("Add valid ro
   })
 })
 
+//delete user 
+//admin only
+const deleteUser = AsyncHandler(async(req,res,next)=>{
+  const id= req.params.id;
+  const user = await User.findById(id)
+
+  if(!user) return next( new ApiError("User not found" , 404))
+   const deleteUser=await User.findByIdAndDelete(id)
+   
+  if(deleteUser){
+    res.status(200).json({
+      success:true,
+      message:"User deleted successfully",
+    
+    })
+  }
+
+})
+
+
+
+
+
+
+
 //____________________________________ export all controllers_______________________________
-export {registerUser , userLogin , getAllUsers,getUserById , updateUserRole}
+export {registerUser , userLogin , getAllUsers,getUserById , updateUserRole , deleteUser}
