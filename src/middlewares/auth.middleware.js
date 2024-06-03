@@ -26,10 +26,12 @@ const authUser = async (req, res, next) => {
 
         return next();
     } catch (error) {
-        console.error('JWT Error:', error);
-        return next(new ApiError("Token is not valid", 400));
-    }
-};
+        if (error.name === 'TokenExpiredError') {
+            return next(new ApiError(`Token expired expiredAt: ${error.expiredAt} `, 401)) 
+        }
+         return next(new ApiError("Invalid token"  , 401))
+        
+}};
 
 // Authorize roles
 const isAdmin = (...roles) => {

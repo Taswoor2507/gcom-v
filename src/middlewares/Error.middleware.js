@@ -10,21 +10,26 @@ if(err.name === "CastError"){
     
 }
 
-if(err.name=== "TokenExpiredError"){
-    err.message = "Token is expired at ${err.expiredAt} login again "
-    err.statusCode =  401 
+if(err.name=== "TokenExpiredError" || err.name==="JWT Error"){
+    const message = "Token is expired at ${err.expiredAt} login again "
+    new ApiError(message, 401)
 }
 
+
+if(err.name ==="JsonWebTokenError"){
+    const message = "Token is invalid" ;
+    new ApiError(message, 401)
+}
 
 
 
 return res.status(err.statusCode).json({
     message:err.message,
-    stack:err.stack, 
-    errors :err.errors ,
+    // stack:err.stack, 
+    // errors :err.errors ,
     name:err.name,
-    code :err.code,
-    path:err.path
+    // code :err.code,
+    // path:err.path
 })
 
 }
