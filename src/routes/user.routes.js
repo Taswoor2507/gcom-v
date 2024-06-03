@@ -1,4 +1,4 @@
-import { registerUser, userLogin , getAllUsers , getUserById} from "../controlleres/user.controller.js";
+import { registerUser, userLogin , getAllUsers , getUserById, updateUserRole} from "../controlleres/user.controller.js";
 import express from "express";
 import upload from "../middlewares/multer.middleware.js";
 import registerValidator from "../utils/RegisterValidator.js";
@@ -10,15 +10,12 @@ const userRouter = express.Router();
 userRouter.route("/register").post(upload.single("profileImage") , registerValidator, validate , registerUser);
 //login route for user login
 userRouter.route("/login").post( loginValidator, validate , userLogin);
-// userRouter.route("/user").get(authUser ,  isAdmin("admin") , (req,res,next)=>{
-//     console.log("hello");
-//     res.json({
-//         message:"hello admin how are you"
-//     })
-// })
 //get all users 
 userRouter.route("/").get(authUser , isAdmin("admin") , getAllUsers )
-
 //get user by id 
 userRouter.route("/:id").get(authUser , isAdmin("admin") , getUserById)
+//update user role 
+userRouter.route("/changerole/:id").put(authUser , isAdmin("admin") , updateUserRole)
+
+//export user router 
 export default userRouter

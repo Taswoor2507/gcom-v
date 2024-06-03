@@ -147,5 +147,25 @@ if(!user) return next(ApiError("User not found" , 404))
 
 })
 
+//update user role 
+const updateUserRole = AsyncHandler(async(req,res,next)=>{
+  const id = req.params.id;
+  const user = await User.findById(id)
+  if(!user) return next(ApiError("User not found" , 404))
+  const {role} = req.body;
+if(!role){
+  return next(new ApiError("Add role first", 404))
+}
+
+if(role !== "admin" || role !==  "admin") return next(new ApiError("Add valid role" , 400))
+  user.role = role;
+  await user.save();
+  res.status(200).json({
+    success:true,
+    message:"User role updated successfully",
+    data:user
+  })
+})
+
 //____________________________________ export all controllers_______________________________
-export {registerUser , userLogin , getAllUsers,getUserById}
+export {registerUser , userLogin , getAllUsers,getUserById , updateUserRole}
