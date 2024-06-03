@@ -1,4 +1,4 @@
-import { registerUser, userLogin , getAllUsers , getUserById, updateUserRole, deleteUser, updateAccount} from "../controlleres/user.controller.js";
+import { registerUser, userLogin , getAllUsers , getUserById, updateUserRole, deleteUser, updateAccount , updateProfileImage} from "../controlleres/user.controller.js";
 import express from "express";
 import upload from "../middlewares/multer.middleware.js";
 import registerValidator from "../utils/RegisterValidator.js";
@@ -15,10 +15,17 @@ userRouter.route("/").get(authUser , isAdmin("admin") , getAllUsers )
 //get user by id 
 userRouter.route("/:id").get(authUser , isAdmin("admin") , getUserById)
 //update user role 
-userRouter.route("/changerole/:id").put(authUser , isAdmin("admin") , updateUserRole)
+userRouter.route("/changerole/:id").patch(authUser , isAdmin("admin") , updateUserRole)
 //delete / unActive user account 
 userRouter.route("/delete/:id").delete(authUser ,  isAdmin("admin") , deleteUser ) 
 //update account 
 userRouter.route("/update/:id").patch(authUser , updateAccount)
+//update user profile image 
+userRouter.route("/updateprofileimage/:id").patch(upload.single("profileImage"),  authUser  , updateProfileImage)
+
+// 
+
+
+
 //export user router 
 export default userRouter

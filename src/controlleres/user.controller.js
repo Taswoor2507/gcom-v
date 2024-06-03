@@ -188,11 +188,6 @@ const deleteUser = AsyncHandler(async(req,res,next)=>{
 })
 
 //update account 
-
-
-// Validation middleware
-
-
 const updateAccount = AsyncHandler(async (req, res, next) => {
   const user = req.user;
   if (!user) return next(new ApiError('Login first to update your account', 403));
@@ -226,5 +221,36 @@ const updateAccount = AsyncHandler(async (req, res, next) => {
 });
 
 
+//update user profile image
+const updateProfileImage  = AsyncHandler(async(req,res,next)=>{
+   const user =  req.user;
+   const {id} = req.user 
+   if(!user) return next(new ApiError("Login is required"));
+// console.log(req.file);
+//
+const profileImageLocalPath = req.file?.path
+// console.log(profileImageLocalPath);
+if(!profileImageLocalPath){
+  return next(new ApiError("Profile image is required" , 403));
+}
+
+//upload image on cloudinary
+  const imageObj = await uploadOnCloudinary(profileImageLocalPath)
+  // console.log(imageObj);
+
+  if(!imageObj)  next(ApiError("Image not found on cloudinary" ,  404))
+  const updatedUserProfile  = await User.findByIdAndUpdate(id ,  {profileImage: imageObj.url}, {
+new:true, runValidators:false});
+  
+  if(!updatedUserProfile) return next(new ApiError("Profile image updation failed " , 404))
+   
+    res.status(200).json({
+      success:true,
+      message:"Profile image updated successfully",
+      data:updatedUserProfile
+    })
+})
+
+
 //____________________________________ export all controllers_______________________________
-export {registerUser , userLogin , getAllUsers,getUserById , updateUserRole , deleteUser, updateAccount}
+export {registerUser , userLogin , getAllUsers,getUserById , updateUserRole , deleteUser, updateAccount , updateProfileImage}

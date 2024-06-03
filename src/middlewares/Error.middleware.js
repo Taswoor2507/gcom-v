@@ -25,11 +25,11 @@ if(err.name ==="JsonWebTokenError"){
 
 return res.status(err.statusCode).json({
     message:err.message,
-    // stack:err.stack, 
-    // errors :err.errors ,
+    stack:err.stack, 
+    errors :err.errors ,
     name:err.name,
-    // code :err.code,
-    // path:err.path
+    code :err.code,
+    path:err.path
 })
 
 }
