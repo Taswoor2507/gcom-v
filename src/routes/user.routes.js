@@ -1,4 +1,4 @@
-import { registerUser, userLogin , getAllUsers , getUserById, updateUserRole, deleteUser} from "../controlleres/user.controller.js";
+import { registerUser, userLogin , getAllUsers , getUserById, updateUserRole, deleteUser, updateAccount} from "../controlleres/user.controller.js";
 import express from "express";
 import upload from "../middlewares/multer.middleware.js";
 import registerValidator from "../utils/RegisterValidator.js";
@@ -16,9 +16,9 @@ userRouter.route("/").get(authUser , isAdmin("admin") , getAllUsers )
 userRouter.route("/:id").get(authUser , isAdmin("admin") , getUserById)
 //update user role 
 userRouter.route("/changerole/:id").put(authUser , isAdmin("admin") , updateUserRole)
-
 //delete / unActive user account 
 userRouter.route("/delete/:id").delete(authUser ,  isAdmin("admin") , deleteUser ) 
-
+//update account 
+userRouter.route("/update/:id").patch(authUser , updateAccount)
 //export user router 
 export default userRouter

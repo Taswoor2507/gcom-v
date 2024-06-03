@@ -187,11 +187,44 @@ const deleteUser = AsyncHandler(async(req,res,next)=>{
 
 })
 
+//update account 
 
 
+// Validation middleware
 
 
+const updateAccount = AsyncHandler(async (req, res, next) => {
+  const user = req.user;
+  if (!user) return next(new ApiError('Login first to update your account', 403));
+
+  const { username, email, contactNo } = req.body;
+
+  // Prepare update data
+  const updateData = {};
+  if (username) updateData.username = username;
+  if (email) updateData.email = email;
+  if (contactNo) updateData.contactNo = contactNo;
+
+  // Update profile
+  const updatedUser = await User.findByIdAndUpdate(req.user.id, updateData, {
+    new: true, // Return the updated user
+    runValidators: true, // Validate the update operation against the schema
+  });
+
+  // Handle case where user is not found
+  if (!updatedUser) {
+    return next(new ApiError('User not found', 404));
+  }
+
+  // Respond with the updated user
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user: updatedUser,
+    },
+  });
+});
 
 
 //____________________________________ export all controllers_______________________________
-export {registerUser , userLogin , getAllUsers,getUserById , updateUserRole , deleteUser}
+export {registerUser , userLogin , getAllUsers,getUserById , updateUserRole , deleteUser, updateAccount}
