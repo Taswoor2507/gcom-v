@@ -114,6 +114,38 @@ const userLogin = AsyncHandler(async (req, res, next) => {
 // _______________login controller ends____________________________________________
 
 
+//get all users controllers 
+//access --> admin only 
+
+
+const getAllUsers=AsyncHandler(async(req,res,next)=>{
+     const users = await User.find();
+     //total documents 
+     const totalUsers  = await User.find().count();
+     res.status(200).json({
+         success:true,
+         totalUsers,
+         message:"All users fetched successfully",
+         data:users
+     })  
+
+})
+
+
+
+
+//get single user by id 
+const getUserById = AsyncHandler(async(req,res,next)=>{
+  const id = req.params.id;
+   const user =  await User.findById(id)
+if(!user) return next(ApiError("User not found" , 404))
+
+  res.status(200).json({
+    success:true,
+    user, 
+  })
+
+})
 
 //____________________________________ export all controllers_______________________________
-export {registerUser , userLogin}
+export {registerUser , userLogin , getAllUsers,getUserById}

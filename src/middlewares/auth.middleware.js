@@ -1,33 +1,44 @@
-import ApiError from "../utils/ApiError.js"
-import EnvVariables from "../constants.js"
-import User from "../models/user.model.js"
-const {JWT_SECRET_KEY} = EnvVariables
-const authUser = (req,res,next)=>{
-    const token = req.headers.authorization?.split(" ")[1]
-    if(!token){
-        return next(new ApiError("Token is not available" , 400))
+import jwt from 'jsonwebtoken'; // Ensure this is imported
+import ApiError from "../utils/ApiError.js";
+import EnvVariables from "../constants.js";
+import User from "../models/user.model.js";
+
+const { JWT_SECRET_KEY } = EnvVariables;
+// console.log(JWT_SECRET_KEY);
+const authUser = async (req, res, next) => {
+    // Extract token from Authorization header
+    const token = req.header("Authorization")?.split("Bearer ")[1];
+    // console.log('Token:', token);
+
+    if (!token) {
+        return next(new ApiError("Token is not available", 400));
     }
+
     try {
-        const decoded = jwt.verify(token,JWT_SECRET_KEY)
-        req.user = User.findOne(decoded)
-    return next()
-    } catch (error) {
-        return next(new ApiError("Token is not valid" , 400))
-    }
-}
-
-
-// authrorize roles 
- const isAdmin =  (...roles) =>{
-     return (req,res,next)=>{
-        if(!roles.includes(req.user.role)){
-            return next(new ApiError("You are not authrize to do this task",400))
+        // Verify the token
+        const decoded = jwt.verify(token, JWT_SECRET_KEY);
+        // Find user by decoded information (assuming the decoded token contains user ID)
+        req.user = await User.findById(decoded.id);  // Assuming decoded contains user ID as 'id'
+        
+        if (!req.user) {
+            return next(new ApiError("User not found", 404));
         }
-        return next()
-     }
- }
 
+        return next();
+    } catch (error) {
+        console.error('JWT Error:', error);
+        return next(new ApiError("Token is not valid", 400));
+    }
+};
 
+// Authorize roles
+const isAdmin = (...roles) => {
+    return (req, res, next) => {
+        if (!roles.includes(req.user.role)) {
+            return next(new ApiError("You are not authorized to do this task", 400));
+        }
+        return next();
+    };
+};
 
-
-export {authUser , isAdmin}
+export { authUser, isAdmin };
