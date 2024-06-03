@@ -10,6 +10,11 @@ if(err.name === "CastError"){
     
 }
 
+if(err.name=== "TokenExpiredError"){
+    err.message = "Token is expired at ${err.expiredAt} login again "
+    err.statusCode =  401 
+}
+
 
 
 
