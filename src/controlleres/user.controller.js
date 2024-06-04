@@ -334,10 +334,27 @@ const resetPassword = AsyncHandler(async (req, res, next) => {
     }
   });
 });
+// change password 
+const changePassword  = AsyncHandler(async(req,res,next)=>{
+ const user  = req.user  ; 
+ if(!user) return next(new ApiError("Login is required" ,  403));
+ const {oldPassword, newPassword, confirmPassword} = req.body;
+ if(!oldPassword || !newPassword || !confirmPassword) return next(new ApiError("All field are required ", 400))
+  const matchPassword = user.matchPassword(oldPassword)
+if(!matchPassword) return next(new ApiError("Your password is incorrect" , 403))
+ if(newPassword!== confirmPassword) return next(new ApiError("Password and confirm password must be same" , 400))
+
+  user.password =  newPassword;
+  await user.save({validateBeforeSave:false});
+
+  res.status(200).json({
+    success:true,
+    message:"Password changed successfully",
+    data:user
+  })
+})
 
 
 
-
-
-//____________________________________ export all controllers_______________________________
-export {registerUser , userLogin , getAllUsers,getUserById , updateUserRole , deleteUser, updateAccount , updateProfileImage , forgetPassword , resetPassword }
+//__________________________ export all controllers_______________________________
+export {registerUser , userLogin , getAllUsers,getUserById , updateUserRole , deleteUser, updateAccount , updateProfileImage , forgetPassword , resetPassword , changePassword}
