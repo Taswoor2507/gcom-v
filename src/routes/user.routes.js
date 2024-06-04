@@ -1,4 +1,4 @@
-import { registerUser, userLogin , getAllUsers , getUserById, updateUserRole, deleteUser, updateAccount , updateProfileImage, forgetPassword} from "../controlleres/user.controller.js";
+import { registerUser, userLogin , getAllUsers , getUserById, updateUserRole, deleteUser, updateAccount , updateProfileImage, forgetPassword, resetPassword} from "../controlleres/user.controller.js";
 import express from "express";
 import upload from "../middlewares/multer.middleware.js";
 import registerValidator from "../utils/RegisterValidator.js";
@@ -26,8 +26,8 @@ userRouter.route("/updateprofileimage/:id").patch(upload.single("profileImage"),
 
 // forget password
 userRouter.route("/password/forget").post(forgetPasswordValidator , validate , forgetPassword) 
-// change password 
-
+// reset password 
+userRouter.route("/password/reset/:resetPasswordToken").patch(resetPassword)
 
 // refresh access token implement in v2
 

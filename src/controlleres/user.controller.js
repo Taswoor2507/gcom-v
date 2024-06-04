@@ -263,7 +263,7 @@ const forgetPassword  = AsyncHandler(async(req,res,next)=>{
       // create link for reset password 
       const resetPasswordUrl = `${req.protocol}://${req.get(
         "host"
-      )}/password/reset/${resetToken}`;
+      )}/api/v1/users/password/reset/${resetToken}`;
       //messsage for email
       const message = `Your password reset token is :- \n\n ${resetPasswordUrl} \n\nIf you have not requested this email then, please ignore it.`;
       try {
@@ -275,7 +275,7 @@ const forgetPassword  = AsyncHandler(async(req,res,next)=>{
          }
        await sendEmail(options)
       } catch (error) {
-        user.resetPasswordExpired = undefined;
+        user.resetPasswordExpire = undefined;
         user.resetPasswordToken = undefined;
         await user.save({validateBeforeSave:false})
         //http://localhost:7070/password/reset/f68780a1da2e99a71bcaa58b1db4574031639293
@@ -284,19 +284,60 @@ const forgetPassword  = AsyncHandler(async(req,res,next)=>{
 
       res.status(200).json({
         success:true,
-        message:"Reset password link sent successfully",
-        data:user
+        successMessage:"Reset password link sent successfully",
+        data:user, 
+        message
       })
 
 })
 
+//reset password  
+const resetPassword = AsyncHandler(async (req, res, next) => {
+  const resetPasswordToken = req.params.resetPasswordToken;
+  console.log(resetPasswordToken);
 
+  const user = await User.findOne({
+    resetPasswordToken,
+    resetPasswordExpire: { $gt: Date.now() }
+  });
+  
+  console.log("user", user);
 
+  if (!user) return next(new ApiError("User not found", 404));
 
+  const { password, confirmPassword } = req.body;
+  
+  if (!password || !confirmPassword) {
+    return next(new ApiError("Set password first", 400));
+  }
+  
+  if (password !== confirmPassword) {
+    return next(new ApiError("Password and confirm password must be same", 400));
+  }
+
+  // Assuming you have a pre-save hook to hash the password
+  user.password = password;
+  
+  // Reset the token and expiration date
+  user.resetPasswordToken = undefined;
+  user.resetPasswordExpire = undefined;
+  
+  await user.save({ validateBeforeSave: false });
+
+  res.status(200).json({
+    success: true,
+    message: "Password reset successfully",
+    user: {
+      _id: user._id,
+      email: user.email,
+      // Add other fields you want to return
+    }
+  });
+});
 
 
 
 
 
 //____________________________________ export all controllers_______________________________
-export {registerUser , userLogin , getAllUsers,getUserById , updateUserRole , deleteUser, updateAccount , updateProfileImage , forgetPassword}
+export {registerUser , userLogin , getAllUsers,getUserById , updateUserRole , deleteUser, updateAccount , updateProfileImage , forgetPassword , resetPassword }
