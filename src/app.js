@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import rateLimit from 'express-rate-limit';
 
 // dotenv configuration
 dotenv.config({
@@ -9,6 +10,14 @@ dotenv.config({
 
 // Create Express app
 const app = express();
+
+//rate limiter
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // Limit requests per 15 minutes
+  max: 30, // Allow maximum of 100 requests within the window
+});
+
+
 
 // CORS configuration
 app.use(cors({
