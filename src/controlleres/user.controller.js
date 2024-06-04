@@ -251,6 +251,52 @@ new:true, runValidators:false});
     })
 })
 
+// forget password 
+const forgetPassword  = AsyncHandler(async(req,res,next)=>{
+      const user = await User.findOne({email:req.body.email});
+      if(!user) return next(new ApiError(404, "User not found"));
+      
+      // get resetpassword token
+      const resetToken = user.getResetPasswordToken();
+      await user.save({validateBeforeSave:false}); 
+      
+      // create link for reset password 
+      const resetPasswordUrl = `${req.protocol}://${req.get(
+        "host"
+      )}/password/reset/${resetToken}`;
+      //messsage for email
+      const message = `Your password reset token is :- \n\n ${resetPasswordUrl} \n\nIf you have not requested this email then, please ignore it.`;
+      try {
+         const options = {
+          sendTo : user.email, 
+          subject : "Gcom reset password link msg " , 
+          text : message
+          // html : `Congratulations ${user.username} you have successfully registered on our website` ,
+         }
+       await sendEmail(options)
+      } catch (error) {
+        user.resetPasswordExpired = undefined;
+        user.resetPasswordToken = undefined;
+        await user.save({validateBeforeSave:false})
+        //http://localhost:7070/password/reset/f68780a1da2e99a71bcaa58b1db4574031639293
+        return next(new ApiError("Email reset message not sent successfully" , 500));
+      }
+
+      res.status(200).json({
+        success:true,
+        message:"Reset password link sent successfully",
+        data:user
+      })
+
+})
+
+
+
+
+
+
+
+
 
 //____________________________________ export all controllers_______________________________
-export {registerUser , userLogin , getAllUsers,getUserById , updateUserRole , deleteUser, updateAccount , updateProfileImage}
+export {registerUser , userLogin , getAllUsers,getUserById , updateUserRole , deleteUser, updateAccount , updateProfileImage , forgetPassword}

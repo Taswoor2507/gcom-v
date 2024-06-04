@@ -1,6 +1,7 @@
 import mongoose , {Schema} from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken'
+import crypto from "crypto";
 import EnvVariables from "../constants.js";
 const  {JWT_SECRET_KEY , JWT_EXPIRE_TIME} =EnvVariables;
 const userSchema = new Schema ({
@@ -40,7 +41,9 @@ const userSchema = new Schema ({
   contactNo:{
     type:Number,
     required:true
-  }
+  } ,
+  resetPasswordToken: String,
+  resetPasswordExpire: Date,
 
 } ,{timestamps:true})
 
@@ -73,6 +76,17 @@ userSchema.methods.generateAccessToken = function(){
      )
 }
 
+
+//reset password token 
+userSchema.methods.getResetPasswordToken= function(){
+  const refreshToken = crypto.randomBytes(20).toString("hex");
+  this.resetPasswordToken = crypto.createHash("sha256")
+  .update(refreshToken)
+  .digest("hex");
+
+  this.resetPasswordExpire = Date.now() + 10 * 60 * 1000 ;
+  return refreshToken;
+}
 
 
 
